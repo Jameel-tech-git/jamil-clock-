@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080808">
+<meta name="description" content="JAMIL CLOCK PRO 2.0 — luxury analog clock, themes, alarm, stopwatch and laps.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<title>JAMIL CLOCK PRO 2.0</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#080808;--face:#171717;--text:#f8e7ad;--muted:#b5a36d;--accent:#d4af37;--panel:#141414;--border:#3a3018;--shadow:rgba(0,0,0,.5)}
+body{min-height:100vh;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Arial,sans-serif;transition:background .3s,color .3s;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:-40%;pointer-events:none;z-index:-1;background:radial-gradient(circle at 25% 20%,color-mix(in srgb,var(--accent) 18%,transparent),transparent 30%),radial-gradient(circle at 75% 75%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 32%);animation:ambient 14s ease-in-out infinite alternate}
+@keyframes ambient{from{transform:translate(-2%,-1%) scale(1)}to{transform:translate(2%,2%) scale(1.08)}}
+body.light{--bg:#f3f4f8;--face:#fff;--text:#171717;--muted:#777;--accent:#bc8c22;--panel:#fff;--border:#e1e1e7;--shadow:rgba(0,0,0,.13)}
+body.blue{--bg:#06121f;--face:#102338;--text:#e3f3ff;--muted:#8eb3d1;--accent:#47b9ff;--panel:#0c1d2e;--border:#1b4564;--shadow:rgba(0,0,0,.5)}
+body.green{--bg:#07150f;--face:#10251b;--text:#e2ffe9;--muted:#90b99d;--accent:#4fe08a;--panel:#0d2117;--border:#1b5134;--shadow:rgba(0,0,0,.5)}
+body.purple{--bg:#130b1c;--face:#21132f;--text:#f4e4ff;--muted:#b99acb;--accent:#c77dff;--panel:#1b1027;--border:#56356e;--shadow:rgba(0,0,0,.5)}
+button,input,select{font:inherit}
+button{border:0;border-radius:12px;padding:11px 14px;background:var(--accent);color:#111;font-weight:750;cursor:pointer;transition:transform .15s,filter .2s}
+button:active{transform:scale(.97)}
+button.secondary{background:var(--panel);color:var(--text);border:1px solid var(--border)}
+.app{max-width:560px;margin:auto;min-height:100vh;padding:calc(16px + env(safe-area-inset-top)) 18px calc(22px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:15px}
+header{text-align:center}.brand{font-size:clamp(28px,8vw,38px);font-weight:850;letter-spacing:.3em;padding-left:.3em;color:var(--accent);text-shadow:0 0 24px color-mix(in srgb,var(--accent) 22%,transparent)}
+.subtitle{font-size:10px;letter-spacing:.3em;color:var(--muted);margin-top:5px}
+.clock{width:min(76vw,330px);aspect-ratio:1;position:relative;border-radius:50%;background:var(--face);box-shadow:12px 12px 30px var(--shadow),-8px -8px 24px rgba(255,255,255,.06),inset 0 0 0 1px var(--border);border:2px solid var(--accent);flex-shrink:0}
+.clock:before,.clock:after{content:"";position:absolute;inset:7px;border:1px solid color-mix(in srgb,var(--accent) 60%,transparent);border-radius:50%;pointer-events:none}
+.clock:after{inset:13px;border-color:color-mix(in srgb,var(--accent) 20%,transparent)}
+.number{position:absolute;width:34px;height:34px;left:50%;top:50%;margin:-17px 0 0 -17px;display:flex;align-items:center;justify-content:center;font-size:clamp(14px,4vw,19px);font-weight:700;color:var(--text);transform:rotate(calc(var(--i)*30deg)) translateY(calc(-1 * var(--r))) rotate(calc(var(--i)*-30deg))}
+.tick{position:absolute;left:50%;top:50%;height:6px;width:2px;margin-left:-1px;margin-top:calc(-1 * var(--tr));background:var(--muted);opacity:.45;transform-origin:1px var(--tr);transform:rotate(calc(var(--i)*6deg))}
+.tick.major{height:10px;width:3px;margin-left:-1.5px;opacity:.9;background:var(--accent)}
+.hand{position:absolute;left:50%;bottom:50%;border-radius:10px;transform-origin:50% 100%;transform:translateX(-50%) rotate(0deg)}
+.hour{width:5px;height:24%;background:var(--text);z-index:3}.minute{width:3.5px;height:33%;background:var(--accent);z-index:4}.second{width:1.5px;height:37%;background:#dc5c65;z-index:5}
+.center-dot{position:absolute;left:50%;top:50%;width:12px;height:12px;background:var(--accent);border:2px solid var(--face);border-radius:50%;transform:translate(-50%,-50%);z-index:6;box-shadow:0 0 10px color-mix(in srgb,var(--accent) 55%,transparent)}
+.digital{font-size:clamp(23px,6vw,30px);font-weight:750;font-variant-numeric:tabular-nums;letter-spacing:.02em}.date{font-size:13px;color:var(--muted);text-align:center;margin-top:-9px}
+.controls{width:100%;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.panel{width:100%;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:15px;box-shadow:0 8px 24px var(--shadow)}.panel h2{font-size:16px;margin-bottom:12px}.panel[hidden]{display:none}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:10px 0}.row label{font-size:13px;color:var(--muted)}input,select{background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:9px;padding:9px;min-width:0}input[type=time]{flex:1}input[type=color]{width:48px;height:40px;padding:3px}.small-note{font-size:12px;color:var(--muted);line-height:1.5}
+.stopwatch-time{font-size:32px;font-weight:750;font-variant-numeric:tabular-nums;text-align:center;margin:8px}.laps{max-height:160px;overflow:auto;margin-top:10px}.lap{display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:7px 2px;font-size:13px}
+.footer{font-size:10px;letter-spacing:.25em;color:var(--muted);text-align:center;margin-top:2px}
+body.fullscreen .app{max-width:none;justify-content:center;min-height:100vh}body.fullscreen .clock{width:min(70vmin,500px)}
+@media(max-height:690px){.app{gap:10px;padding-top:10px}.clock{width:min(55vw,250px)}.brand{font-size:25px}}
+</style>
+</head>
+<body>
+<main class="app">
+<header><div class="brand">JAMIL</div><div class="subtitle">CLOCK PRO 2.0 • TIMELESS ELEGANCE</div></header>
+<div class="clock" id="clock" aria-label="Analog clock"><div class="hand hour" id="hour"></div><div class="hand minute" id="minute"></div><div class="hand second" id="second"></div><div class="center-dot"></div></div>
+<div class="digital" id="digital">--:--:--</div><div class="date" id="date"></div>
+<div class="controls">
+<button id="themeBtn" class="secondary">Light Mode</button><button id="fullBtn" class="secondary">Full Screen</button>
+<button id="settingsBtn" class="secondary">Themes & Colors</button><button id="alarmBtn" class="secondary">Alarm</button><button id="stopwatchBtn" class="secondary">Stopwatch</button>
+</div>
+<section class="panel" id="settingsPanel" hidden>
+<h2>Choose a theme</h2><div class="row"><label for="themeSelect">Color theme</label><select id="themeSelect"><option value="gold">Luxury Gold</option><option value="light">Light</option><option value="blue">Ocean Blue</option><option value="green">Emerald Green</option><option value="purple">Royal Purple</option></select><button id="applyTheme">Apply</button></div>
+<h2 style="margin-top:15px">Custom accent</h2><div class="row"><label for="accentColor">Accent color</label><input type="color" id="accentColor" value="#d4af37"><button id="applyAccent">Apply color</button></div>
+<p class="small-note">Your selected theme is saved in this browser.</p>
+</section>
+<section class="panel" id="alarmPanel" hidden>
+<h2>Alarm</h2><div class="row"><label for="alarmTime">Alarm time</label><input type="time" id="alarmTime"><button id="setAlarm">Set alarm</button></div>
+<div class="row"><label for="alarmSound">Alarm sound</label><select id="alarmSound"><option value="classic">Classic beeps</option><option value="gentle">Gentle chime</option><option value="digital">Digital alert</option></select></div>
+<div class="row"><span id="alarmStatus" class="small-note">No alarm set.</span><button class="secondary" id="testAlarm">Test sound</button><button class="secondary" id="cancelAlarm">Cancel</button></div>
+<p class="small-note">For the alarm to work, keep this page open and prevent your phone from sleeping. Browser alarms may not ring if the page is closed or suspended.</p>
+</section>
+<section class="panel" id="stopwatchPanel" hidden>
+<h2>Stopwatch</h2><div class="stopwatch-time" id="swDisplay">00:00.00</div>
+<div class="controls"><button id="swStart">Start</button><button class="secondary" id="swLap">Lap</button><button class="secondary" id="swReset">Reset</button></div><div class="laps" id="laps"></div>
+</section>
+<div class="footer">MADE WITH CARE • JAMIL</div>
+</main>
+<script>
+const $=id=>document.getElementById(id),clock=$('clock');
+for(let i=0;i<60;i++){const t=document.createElement('div');t.className=i%5===0?'tick major':'tick';t.style.setProperty('--i',i);t.style.setProperty('--tr','calc(min(38vw, 165px) - 12px)');clock.appendChild(t)}
+for(let i=1;i<=12;i++){const n=document.createElement('div');n.className='number';n.textContent=i;n.style.setProperty('--i',i);n.style.setProperty('--r','calc(min(30vw, 130px))');clock.appendChild(n)}
+function updateClock(){const d=new Date(),h=d.getHours(),m=d.getMinutes(),s=d.getSeconds(),ms=d.getMilliseconds();$('hour').style.transform=`translateX(-50%) rotate(${((h%12)+m/60)*30}deg)`;$('minute').style.transform=`translateX(-50%) rotate(${(m+(s+ms/1000)/60)*6}deg)`;$('second').style.transform=`translateX(-50%) rotate(${(s+ms/1000)*6}deg)`;$('digital').textContent=d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});$('date').textContent=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});checkAlarm(d)}
+const themes=['gold','light','blue','green','purple'];let currentTheme=localStorage.getItem('jamilTheme2')||'gold';
+function setTheme(t){currentTheme=themes.includes(t)?t:'gold';document.body.classList.remove(...themes.filter(x=>x!=='gold'));if(currentTheme!=='gold')document.body.classList.add(currentTheme);localStorage.setItem('jamilTheme2',currentTheme);$('themeSelect').value=currentTheme;$('themeBtn').textContent=currentTheme==='light'?'Dark Mode':'Light Mode';document.querySelector('meta[name="theme-color"]').content=getComputedStyle(document.body).getPropertyValue('--bg').trim()}
+setTheme(currentTheme);
+$('themeBtn').onclick=()=>setTheme(currentTheme==='light'?'gold':'light');
+$('fullBtn').onclick=async()=>{try{if(!document.fullscreenElement){await document.documentElement.requestFullscreen();document.body.classList.add('fullscreen');$('fullBtn').textContent='Exit Full Screen'}else await document.exitFullscreen()}catch(e){alert('Full screen is not supported here. Try Chrome.')}};
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement){document.body.classList.remove('fullscreen');$('fullBtn').textContent='Full Screen'}});
+$('settingsBtn').onclick=()=>$('settingsPanel').hidden=!$('settingsPanel').hidden;
+$('alarmBtn').onclick=()=>$('alarmPanel').hidden=!$('alarmPanel').hidden;
+$('stopwatchBtn').onclick=()=>$('stopwatchPanel').hidden=!$('stopwatchPanel').hidden;
+$('applyTheme').onclick=()=>setTheme($('themeSelect').value);
+$('applyAccent').onclick=()=>{document.documentElement.style.setProperty('--accent',$('accentColor').value);localStorage.setItem('jamilAccent2',$('accentColor').value)};
+const savedAccent=localStorage.getItem('jamilAccent2');if(savedAccent){document.documentElement.style.setProperty('--accent',savedAccent);$('accentColor').value=savedAccent}
+let audioCtx=null;function getAudio(){const AC=window.AudioContext||window.webkitAudioContext;if(!AC){alert('This browser does not support sound playback.');return null}if(!audioCtx)audioCtx=new AC();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx}
+function beep(freq,duration,start=0,type='sine',volume=.18){const ac=getAudio();if(!ac)return;const osc=ac.createOscillator(),gain=ac.createGain();osc.type=type;osc.frequency.value=freq;gain.gain.setValueAtTime(.001,ac.currentTime+start);gain.gain.exponentialRampToValueAtTime(volume,ac.currentTime+start+.025);gain.gain.exponentialRampToValueAtTime(.001,ac.currentTime+start+duration);osc.connect(gain);gain.connect(ac.destination);osc.start(ac.currentTime+start);osc.stop(ac.currentTime+start+duration+.04)}
+function playAlarm(){const mode=$('alarmSound').value;if(mode==='gentle'){beep(523,.35,0,'sine');beep(659,.35,.4,'sine');beep(784,.6,.8,'sine')}else if(mode==='digital'){beep(880,.14,0,'square');beep(660,.14,.2,'square');beep(880,.14,.4,'square');beep(660,.3,.6,'square')}else{beep(880,.22,0);beep(660,.22,.3);beep(880,.22,.6);beep(660,.4,.9)}}
+let alarmValue=null,alarmLastKey='';
+$('setAlarm').onclick=()=>{const v=$('alarmTime').value;if(!v){$('alarmStatus').textContent='Choose an alarm time first.';return}getAudio();alarmValue=v;alarmLastKey='';$('alarmStatus').textContent='Alarm set for '+v+'. Keep this page open.'};
+$('testAlarm').onclick=()=>playAlarm();
+$('cancelAlarm').onclick=()=>{alarmValue=null;$('alarmStatus').textContent='No alarm set.'};
+function checkAlarm(d){if(!alarmValue)return;const cur=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'),key=d.toDateString()+' '+cur;if(cur===alarmValue&&d.getSeconds()===0&&key!==alarmLastKey){alarmLastKey=key;playAlarm();$('alarmStatus').textContent='Alarm ringing!';alarmValue=null;setTimeout(()=>alert('JAMIL CLOCK: Alarm time!'),100)}}
+let swRunning=false,swStart=0,swElapsed=0,swLastLap=0,lapCount=0;
+function swTotal(){return swElapsed+(swRunning?performance.now()-swStart:0)}
+function fmt(ms){const cs=Math.floor(ms/10)%100,s=Math.floor(ms/1000)%60,m=Math.floor(ms/60000);return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+'.'+String(cs).padStart(2,'0')}
+function renderSW(){$('swDisplay').textContent=fmt(swTotal())}
+$('swStart').onclick=()=>{if(swRunning){swElapsed+=performance.now()-swStart;swRunning=false;$('swStart').textContent='Resume'}else{swStart=performance.now();swRunning=true;$('swStart').textContent='Pause'}renderSW()};
+$('swLap').onclick=()=>{if(!swRunning&&swElapsed===0)return;const total=swTotal(),lap=total-swLastLap;swLastLap=total;lapCount++;const row=document.createElement('div');row.className='lap';row.innerHTML='<span>Lap '+lapCount+'</span><span>'+fmt(lap)+'</span><span>'+fmt(total)+'</span>';$('laps').prepend(row)};
+$('swReset').onclick=()=>{swRunning=false;swElapsed=0;swStart=performance.now();swLastLap=0;lapCount=0;$('swStart').textContent='Start';$('laps').innerHTML='';renderSW()};
+setInterval(()=>{updateClock();if(swRunning)renderSW()},50);updateClock();renderSW();
+if('serviceWorker' in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+</script>
+</body>
+</html>
